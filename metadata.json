@@ -1,0 +1,9 @@
+{
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "display-capture"
+  ],
+  "name": "zip",
+  "description": "Deepfake detection platform with live monitoring capabilities."
+}
