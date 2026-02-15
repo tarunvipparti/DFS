@@ -53,7 +53,6 @@ const Scanner: React.FC<ScannerProps> = ({ onComplete }) => {
   const [selectedResult, setSelectedResult] = useState<AnalysisResult | null>(null);
   const [isBatchRunning, setIsBatchRunning] = useState(false);
   
-  // Live HUD States
   const [liveThreatScore, setLiveThreatScore] = useState<number>(0);
   const [threatTrend, setThreatTrend] = useState<'UP' | 'DOWN' | 'STABLE'>('STABLE');
   const [scanCount, setScanCount] = useState(0);
@@ -106,18 +105,13 @@ const Scanner: React.FC<ScannerProps> = ({ onComplete }) => {
           setScanCount(c => c + 1);
           setLastScanTime(new Date().toLocaleTimeString());
           
-          const isFake = res.classification === Classification.FAKE;
-          const isAtRisk = res.classification === Classification.SUSPICIOUS && res.authenticityScore < 60;
-          
-          if (isFake || isAtRisk) {
+          if (res.classification === Classification.FAKE || (res.classification === Classification.SUSPICIOUS && res.authenticityScore < 60)) {
             setLiveAlert(res);
             setLastScanWasSafe(false);
             onComplete(res); 
-          } else {
-            if (res.authenticityScore > 72) {
-              setLastScanWasSafe(true);
-              setLiveAlert(null);
-            }
+          } else if (res.authenticityScore > 72) {
+            setLastScanWasSafe(true);
+            setLiveAlert(null);
           }
         }
       }
@@ -126,7 +120,7 @@ const Scanner: React.FC<ScannerProps> = ({ onComplete }) => {
     } finally {
       setIsAnalyzingLive(false);
       if (isStreamingRef.current) {
-        samplingTimeoutRef.current = window.setTimeout(captureAndAnalyze, 2000);
+        samplingTimeoutRef.current = window.setTimeout(captureAndAnalyze, 3000);
       }
     }
   }, [onComplete]);
@@ -205,11 +199,7 @@ const Scanner: React.FC<ScannerProps> = ({ onComplete }) => {
       setIsStreaming(false);
       setStreamType(null);
       streamTypeRef.current = null;
-      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        setError("Authorization Failed: User rejected node permissions.");
-      } else {
-        setError(err.message || "Establishing forensic link failed.");
-      }
+      setError(err.message || "Establishing forensic link failed.");
     } finally {
       setIsAuthorizing(false);
       setPendingType(null);
@@ -237,19 +227,22 @@ const Scanner: React.FC<ScannerProps> = ({ onComplete }) => {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  /**
-   * Helper to extract a high-quality frame from a video file for analysis.
-   */
   const extractVideoFrame = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const video = document.createElement('video');
       video.preload = 'metadata';
       video.muted = true;
       video.playsInline = true;
-      video.src = URL.createObjectURL(file);
+      const objectUrl = URL.createObjectURL(file);
+      video.src = objectUrl;
       
+      const cleanUp = () => {
+        URL.revokeObjectURL(objectUrl);
+        video.src = '';
+        video.load();
+      };
+
       video.onloadedmetadata = () => {
-        // Seek to 1 second to avoid potential black frames at start
         video.currentTime = Math.min(1, video.duration / 2);
       };
       
@@ -261,14 +254,18 @@ const Scanner: React.FC<ScannerProps> = ({ onComplete }) => {
         if (ctx) {
           ctx.drawImage(video, 0, 0);
           const base64 = canvas.toDataURL('image/jpeg', 0.9);
-          URL.revokeObjectURL(video.src);
+          cleanUp();
           resolve(base64);
         } else {
+          cleanUp();
           reject(new Error("Canvas context failed"));
         }
       };
       
-      video.onerror = (e) => reject(e);
+      video.onerror = (e) => {
+        cleanUp();
+        reject(new Error("Video loading error"));
+      };
     });
   };
 
@@ -293,7 +290,7 @@ const Scanner: React.FC<ScannerProps> = ({ onComplete }) => {
             });
           }
 
-          setTasks(prev => prev.map(t => t.id === task.id ? { ...t, progressMsg: 'AI Neural Analysis in Progress...' } : t));
+          setTasks(prev => prev.map(t => t.id === task.id ? { ...t, progressMsg: 'AI Neural Analysis...' } : t));
           const res = await analyzeContent(artifactData, task.file.name, task.metadata!);
           
           setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: DetectionStatus.COMPLETED, result: res, progressMsg: 'Audit Complete' } : t));
@@ -402,7 +399,7 @@ const Scanner: React.FC<ScannerProps> = ({ onComplete }) => {
                    </div>
                    <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-xs font-bold text-white truncate max-w-[180px] italic">{task.file.name}</span>
+                        <span className="text-xs font-bold text-white truncate max-w-[200px] italic">{task.file.name}</span>
                         <span className="text-[10px] font-mono text-slate-700 uppercase">{task.id}</span>
                       </div>
                       <span className={`text-[10px] uppercase font-black italic tracking-widest ${task.status === DetectionStatus.FAILED ? 'text-rose-500' : 'text-slate-500'}`}>

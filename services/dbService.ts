@@ -1,16 +1,18 @@
 
-// Fix: Use named export for Dexie to ensure proper type resolution for the base class and its methods.
-import { Dexie, type Table } from 'https://esm.sh/dexie@4.0.10';
+import Dexie from 'dexie';
+import type { Table } from 'dexie';
 import { AnalysisResult } from '../types';
 
+// Forensic Evidence Database Engine
 export class DeepShieldDatabase extends Dexie {
   reports!: Table<AnalysisResult & { thumbnail?: string }>;
 
   constructor() {
     super('deepshield_db');
-    // Fix: Using version() to define database schema version and store configurations.
+    // Define the schema for our forensic reports
+    // Fix: Using the correct Dexie versioning syntax within the constructor
     this.version(1).stores({
-      reports: '++id, timestamp, fileName, classification, fileHash' // Primary key and indexes
+      reports: '++id, timestamp, fileName, classification, fileHash'
     });
   }
 }
@@ -31,11 +33,13 @@ export const dbService = {
   },
 
   async deleteReport(id: string) {
-    // Note: Our id in AnalysisResult is a string like "DS-XXXX", 
-    // but Dexie uses the auto-increment id or we can filter by the DS string.
+    // Some reports have internal 'id' from result, we match the database record
     const record = await db.reports.where('id').equals(id).first();
-    if (record && (record as any).id) {
-      return await db.reports.delete((record as any).id);
+    if (record) {
+      // In Dexie ++id creates an auto-incrementing primary key if not provided,
+      // but we store our AnalysisResult.id in the 'id' property.
+      const primaryKey = (record as any).id;
+      return await db.reports.delete(primaryKey);
     }
   },
 
