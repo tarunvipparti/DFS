@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { AnalysisResult, Classification } from '../types';
 import { Search, Calendar, ShieldCheck, ShieldAlert, ShieldX, ArrowRight, Trash2, Hash, X, Database as DbIcon, RefreshCw, AlertTriangle } from 'lucide-react';
 import ResultsView from './ResultsView';
-import { dbService } from '../services/dbService.ts';
+import { dbService } from '../services/dbService';
 
 interface HistoryViewProps {
   history: AnalysisResult[];

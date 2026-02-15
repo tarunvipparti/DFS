@@ -5,9 +5,9 @@ import {
   Activity, Video, CheckCircle2, X, Radio, Lock, ShieldCheck, Clock, Camera, Info, ShieldX, TrendingUp, TrendingDown,
   Target, Zap, AlertCircle
 } from 'lucide-react';
-import { analyzeContent } from '../services/aiService.ts';
-import { DetectionStatus, AnalysisResult, ContentMetadata, Classification, MediaType } from '../types.ts';
-import ResultsView from './ResultsView.tsx';
+import { analyzeContent } from '../services/aiService';
+import { DetectionStatus, AnalysisResult, ContentMetadata, Classification, MediaType } from '../types';
+import ResultsView from './ResultsView';
 
 interface VerificationTask {
   id: string;

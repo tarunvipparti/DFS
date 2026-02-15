@@ -1,5 +1,5 @@
 import React from 'react';
-import { AnalysisResult, Classification } from '../types.ts';
+import { AnalysisResult, Classification } from '../types';
 import { 
   ShieldCheck, ShieldAlert, ShieldX, Download, ArrowLeft, Info, 
   AlertTriangle, Eye, Layers, Activity, Ban, VolumeX, FileBarChart, Mic, FileText,

@@ -4,6 +4,6 @@
     "microphone",
     "display-capture"
   ],
-  "name": "zip",
-  "description": "Deepfake detection platform with live monitoring capabilities."
+  "name": "DeepShield",
+  "description": "Next-generation AI-based deepfake video detection platform."
 }

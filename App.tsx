@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, ShieldCheck, History, ScanSearch, Menu, X, Globe, Database as DbIcon, ShieldAlert, RefreshCw } from 'lucide-react';
-import Dashboard from './components/Dashboard.tsx';
-import Scanner from './components/Scanner.tsx';
-import HistoryView from './components/HistoryView.tsx';
-import MonitorView from './components/MonitorView.tsx';
-import { AnalysisResult } from './types.ts';
-import { dbService } from './services/dbService.ts';
+import Dashboard from './components/Dashboard';
+import Scanner from './components/Scanner';
+import HistoryView from './components/HistoryView';
+import MonitorView from './components/MonitorView';
+import { AnalysisResult } from './types';
+import { dbService } from './services/dbService';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'scanner' | 'monitor' | 'history'>('dashboard');
@@ -16,12 +16,17 @@ const App: React.FC = () => {
 
   const refreshHistory = async () => {
     setIsSyncing(true);
-    const reports = await dbService.getAllReports();
-    const stats = await dbService.getDatabaseSize();
-    const count = await dbService.getReportCount();
-    setHistory(reports);
-    setDbStats({ usage: stats.usage, count });
-    setTimeout(() => setIsSyncing(false), 800);
+    try {
+      const reports = await dbService.getAllReports();
+      const stats = await dbService.getDatabaseSize();
+      const count = await dbService.getReportCount();
+      setHistory(reports);
+      setDbStats({ usage: stats.usage, count });
+    } catch (error) {
+      console.error("Failed to load history:", error);
+    } finally {
+      setTimeout(() => setIsSyncing(false), 800);
+    }
   };
 
   useEffect(() => {

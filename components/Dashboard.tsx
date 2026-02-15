@@ -1,6 +1,6 @@
 import React from 'react';
 import { Shield, AlertTriangle, CheckCircle, BarChart3, TrendingUp, Scan, Database as DbIcon, Activity } from 'lucide-react';
-import { AnalysisResult, Classification } from '../types.ts';
+import { AnalysisResult, Classification } from '../types';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface DashboardProps {
