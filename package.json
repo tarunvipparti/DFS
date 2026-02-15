@@ -2,7 +2,10 @@
   "name": "deepshield-ai",
   "private": true,
   "version": "1.0.0",
+  "description": "Next-generation AI-based deepfake video detection platform.",
   "type": "module",
+  "author": "DeepShield Global",
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -11,10 +14,11 @@
   },
   "dependencies": {
     "@google/genai": "^1.41.0",
-    "lucide-react": "^0.563.0",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "recharts": "^3.7.0"
+    "dexie": "^4.0.10",
+    "lucide-react": "^0.463.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "recharts": "^2.13.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",

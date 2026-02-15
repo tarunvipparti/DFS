@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, ShieldCheck, History, ScanSearch, Menu, X, Globe, Database as DbIcon, ShieldAlert, RefreshCw } from 'lucide-react';
+import { LayoutDashboard, ShieldCheck, History, ScanSearch, Menu, X, Globe, Database as DbIcon, RefreshCw, LucideIcon } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import Scanner from './components/Scanner';
 import HistoryView from './components/HistoryView';
 import MonitorView from './components/MonitorView';
-import { AnalysisResult } from './types';
+import { AnalysisResult, VerificationTask } from './types';
 import { dbService } from './services/dbService';
 
+type TabType = 'dashboard' | 'scanner' | 'monitor' | 'history';
+
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'scanner' | 'monitor' | 'history'>('dashboard');
+  const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [history, setHistory] = useState<AnalysisResult[]>([]);
+  const [verificationQueue, setVerificationQueue] = useState<VerificationTask[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [dbStats, setDbStats] = useState({ usage: 0, count: 0 });
   const [isSyncing, setIsSyncing] = useState(false);
@@ -38,7 +41,7 @@ const App: React.FC = () => {
     await refreshHistory();
   };
 
-  const NavItem = ({ id, label, icon: Icon }: { id: typeof activeTab, label: string, icon: any }) => (
+  const NavItem = ({ id, label, icon: Icon }: { id: TabType, label: string, icon: LucideIcon }) => (
     <button
       onClick={() => setActiveTab(id)}
       className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl transition-all duration-300 relative group ${
@@ -60,7 +63,6 @@ const App: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-slate-950 overflow-hidden font-sans relative">
-      {/* Background Ambience */}
       <div className="fixed inset-0 pointer-events-none z-0 opacity-40 overflow-hidden">
         <svg width="100%" height="100%" viewBox="0 0 1000 1000" preserveAspectRatio="none">
           <path d="M 50 150 L 250 50 M 100 200 L 100 600 L 150 850" stroke="#3b82f6" strokeWidth="3" fill="none" className="drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
@@ -136,7 +138,7 @@ const App: React.FC = () => {
         </header>
         <div className="p-10 max-w-7xl mx-auto relative">
           {activeTab === 'dashboard' && <Dashboard history={history} onStartScan={() => setActiveTab('scanner')} />}
-          {activeTab === 'scanner' && <Scanner onComplete={handleComplete} />}
+          {activeTab === 'scanner' && <Scanner onComplete={handleComplete} tasks={verificationQueue} setTasks={setVerificationQueue} />}
           {activeTab === 'monitor' && <MonitorView />}
           {activeTab === 'history' && <HistoryView history={history} onRefresh={refreshHistory} />}
         </div>

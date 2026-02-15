@@ -1,11 +1,19 @@
 import React from 'react';
-import { Shield, AlertTriangle, CheckCircle, BarChart3, TrendingUp, Scan, Database as DbIcon, Activity } from 'lucide-react';
+import { Shield, AlertTriangle, CheckCircle, BarChart3, Scan, Database as DbIcon, Activity, LucideIcon } from 'lucide-react';
 import { AnalysisResult, Classification } from '../types';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface DashboardProps {
   history: AnalysisResult[];
   onStartScan: () => void;
+}
+
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  icon: LucideIcon;
+  color: string;
+  subValue?: string;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ history, onStartScan }) => {
@@ -21,7 +29,7 @@ const Dashboard: React.FC<DashboardProps> = ({ history, onStartScan }) => {
     score: h.authenticityScore,
   }));
 
-  const StatCard = ({ title, value, icon: Icon, color, subValue }: any) => (
+  const StatCard: React.FC<StatCardProps> = ({ title, value, icon: Icon, color, subValue }) => (
     <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl group hover:border-slate-700 transition-all duration-300">
       <div className="flex justify-between items-start mb-4">
         <div className={`p-3 rounded-xl ${color} shadow-lg shadow-black/20 group-hover:scale-110 transition-transform`}>
@@ -49,7 +57,6 @@ const Dashboard: React.FC<DashboardProps> = ({ history, onStartScan }) => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Chart */}
         <div className="lg:col-span-2 bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
           <div className="flex justify-between items-center mb-8">
             <h3 className="text-xs font-black text-white italic uppercase tracking-widest flex items-center gap-3">
@@ -92,7 +99,6 @@ const Dashboard: React.FC<DashboardProps> = ({ history, onStartScan }) => {
           </div>
         </div>
 
-        {/* Quick Actions / Recent */}
         <div className="bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] flex flex-col shadow-2xl">
           <h3 className="text-xs font-black text-white italic uppercase tracking-widest mb-8">System Protocols</h3>
           <div className="space-y-4 flex-1">

@@ -1,4 +1,3 @@
-
 export enum DetectionStatus {
   IDLE = 'IDLE',
   UPLOADING = 'UPLOADING',
@@ -37,6 +36,17 @@ export interface ContentMetadata {
 export interface GroundingLink {
   title: string;
   uri: string;
+}
+
+export interface VerificationTask {
+  id: string;
+  file: File;
+  previewUrl: string;
+  status: DetectionStatus;
+  progressMsg: string;
+  result: AnalysisResult | null;
+  error: string | null;
+  metadata: ContentMetadata | null;
 }
 
 export interface AnalysisResult {

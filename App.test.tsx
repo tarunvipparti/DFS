@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react';
+
+import { render } from '@testing-library/react';
 import { expect, test, vi } from 'vitest';
 import React from 'react';
 import App from './App';
@@ -14,14 +15,16 @@ vi.mock('recharts', async () => {
   };
 });
 
+// Fix: Destructure query methods from render result as 'screen' is not exported in this module version
 test('renders DeepShield landing page', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/DeepShield/i);
+  const { getByText } = render(<App />);
+  const linkElement = getByText(/DeepShield/i);
   expect(linkElement).toBeDefined();
 });
 
+// Fix: Destructure query methods from render result as 'screen' is not exported in this module version
 test('renders dashboard by default', () => {
-  render(<App />);
-  const dashboardTitle = screen.getByText(/Audit Overview/i);
+  const { getByText } = render(<App />);
+  const dashboardTitle = getByText(/Audit Overview/i);
   expect(dashboardTitle).toBeDefined();
 });
